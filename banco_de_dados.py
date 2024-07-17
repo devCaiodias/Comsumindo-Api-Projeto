@@ -35,7 +35,7 @@ def create_table_champion(cursor):
     cursor.execute('''
     CREATE TABLE IF NOT EXISTS champion (
         id INT AUTO_INCREMENT PRIMARY KEY,
-        name VARCHAR(255),
+        ids INT,
         title VARCHAR(255),
         blurb TEXT,
         partype VARCHAR(255)
@@ -46,7 +46,7 @@ def create_table_champions_info(cursor):
     cursor.execute('''
     CREATE TABLE IF NOT EXISTS Champions_info (
         id INT AUTO_INCREMENT PRIMARY KEY,
-        Name VARCHAR(255),
+        ids INT,
         attack INT,
         defense INT,
         magic INT,
@@ -58,7 +58,7 @@ def create_table_champions_stats(cursor):
     cursor.execute('''
     CREATE TABLE IF NOT EXISTS Champions_stats (
         id INT AUTO_INCREMENT PRIMARY KEY,
-        Name VARCHAR(255),
+        ids INT,
         hp INT,
         hpperlevel INT,
         mp INT,
@@ -81,15 +81,44 @@ def create_table_champions_stats(cursor):
         attackspeed FLOAT
     )
     ''')
+    
+def create_table_champion_skin(cursor):
+    cursor.execute('''
+    CREATE TABLE IF NOT EXISTS champions_skin (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        ids VARCHAR(255) NOT NULL,
+        skinum TEXT,
+        skindois TEXT,
+        skintres TEXT,
+        skinquatro TEXT,
+        skincinco TEXT,
+        skinseis TEXT,
+        skinsete TEXT,
+        skinoito TEXT,
+        skinnove TEXT,
+        skindez TEXT,
+        skinonze TEXT,
+        skindoze TEXT,
+        skintreze TEXT,
+        skincatoze TEXT,
+        skinquinze TEXT,
+        skindeceseis TEXT,
+        skindecesete TEXT,
+        skindezoito TEXT,
+        skindezenove TEXT,
+        skinvinte TEXT,
+        skinvinteum TEXT
+    );
+    ''')
 
 def inserir_dados_champion(cursor, df):
     for _, champion in df.iterrows():
         cursor.execute('''
         INSERT INTO champion 
-        (name, title, blurb, partype)
+        (ids, title, blurb, partype)
         VALUES (%s, %s, %s, %s)
         ''', (
-            champion['name'],
+            champion['key'],
             champion['title'],
             champion['blurb'],
             champion['partype'],
@@ -99,10 +128,10 @@ def inserir_dados_champions_info(cursor, df):
     for _, champion_info in df.iterrows():
         cursor.execute('''
         INSERT INTO Champions_info 
-        (Name, attack, defense, magic, difficulty)
+        (ids, attack, defense, magic, difficulty)
         VALUES (%s, %s, %s, %s, %s)
         ''', (
-            champion_info['Name'],
+            champion_info['key'],
             champion_info['attack'],
             champion_info['defense'],
             champion_info['magic'],
@@ -113,10 +142,10 @@ def inserir_dados_champions_stats(cursor, df):
     for _, champion_stats in df.iterrows():
         cursor.execute('''
         INSERT INTO Champions_stats
-        (Name, hp, hpperlevel, mp, mpperlevel, movespeed, armor, armorperlevel, spellblock, spellblockperlevel, attackrange, hpregen, hpregenperlevel, mpregen, mpregenperlevel, crit, critperlevel, attackdamage, attackdamageperlevel, attackspeedperlevel, attackspeed)
+        (ids, hp, hpperlevel, mp, mpperlevel, movespeed, armor, armorperlevel, spellblock, spellblockperlevel, attackrange, hpregen, hpregenperlevel, mpregen, mpregenperlevel, crit, critperlevel, attackdamage, attackdamageperlevel, attackspeedperlevel, attackspeed)
         VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
         ''', (
-            champion_stats['Name'],
+            champion_stats['key'],
             champion_stats['hp'],
             champion_stats['hpperlevel'],
             champion_stats['mp'],
@@ -137,4 +166,35 @@ def inserir_dados_champions_stats(cursor, df):
             champion_stats['attackdamageperlevel'],
             champion_stats['attackspeedperlevel'],
             champion_stats['attackspeed']
+        ))
+        
+def inserir_dados_champions_skins(cursor, df):
+    for _, champions_skins in df.iterrows():
+        cursor.execute('''
+        INSERT INTO champions_skin
+        (ids, skinum, skindois, skintres, skinquatro, skincinco, skinseis, skinsete, skinoito, skinnove, skindez, skinonze, skindoze, skintreze, skincatoze, skinquinze, skindeceseis, skindecesete, skindezoito, skindezenove, skinvinte, skinvinteum)
+        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+        ''', (
+            champions_skins['key'],
+            champions_skins.get('skinum'),
+            champions_skins.get('skindois'),
+            champions_skins.get('skintres'),
+            champions_skins.get('skinquatro'),
+            champions_skins.get('skincinco'),
+            champions_skins.get('skinseis'),
+            champions_skins.get('skinsete'),
+            champions_skins.get('skinoito'),
+            champions_skins.get('skinnove'),
+            champions_skins.get('skindez'),
+            champions_skins.get('skinonze'),
+            champions_skins.get('skindoze'),
+            champions_skins.get('skintreze'),
+            champions_skins.get('skincatoze'),
+            champions_skins.get('skinquinze'),
+            champions_skins.get('skindeceseis'),
+            champions_skins.get('skindecesete'),
+            champions_skins.get('skindezoito'),
+            champions_skins.get('skindezenove'),
+            champions_skins.get('skinvinte'),
+            champions_skins.get('skinvinteum'),
         ))
