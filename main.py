@@ -2,6 +2,7 @@ import requests
 import pandas as pd
 import banco_de_dados
 import pprint
+import openpyxl
 
 
 connection = banco_de_dados.get_db_connection()
@@ -112,6 +113,7 @@ if response.status_code == 200:
     
     # Preencher valores nulos com 'default'
     df_skins.fillna('default', inplace=True)
+    df_skins.to_excel('champions_skins.xlsx', index=False)
 
     # Inserir dados preenchidos no banco de dados
     banco_de_dados.inserir_dados_champions_skins(cursor, df_skins)
