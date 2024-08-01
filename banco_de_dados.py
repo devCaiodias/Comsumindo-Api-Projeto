@@ -86,28 +86,12 @@ def create_table_champion_skin(cursor):
     cursor.execute('''
     CREATE TABLE IF NOT EXISTS champions_skin (
         id INT AUTO_INCREMENT PRIMARY KEY,
-        ids VARCHAR(255) NOT NULL,
-        skinum TEXT,
-        skindois TEXT,
-        skintres TEXT,
-        skinquatro TEXT,
-        skincinco TEXT,
-        skinseis TEXT,
-        skinsete TEXT,
-        skinoito TEXT,
-        skinnove TEXT,
-        skindez TEXT,
-        skinonze TEXT,
-        skindoze TEXT,
-        skintreze TEXT,
-        skincatoze TEXT,
-        skinquinze TEXT,
-        skindeceseis TEXT,
-        skindecesete TEXT,
-        skindezoito TEXT,
-        skindezenove TEXT,
-        skinvinte TEXT,
-        skinvinteum TEXT
+        Champion_id INT,
+        id_skins INT,
+        num INT,
+        name VARCHAR(255),
+        chromas BOOLEAN, 
+        urls TEXT
     );
     ''')
 
@@ -172,29 +156,13 @@ def inserir_dados_champions_skins(cursor, df):
     for _, champions_skins in df.iterrows():
         cursor.execute('''
         INSERT INTO champions_skin
-        (ids, skinum, skindois, skintres, skinquatro, skincinco, skinseis, skinsete, skinoito, skinnove, skindez, skinonze, skindoze, skintreze, skincatoze, skinquinze, skindeceseis, skindecesete, skindezoito, skindezenove, skinvinte, skinvinteum)
-        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+        (Champion_id, id_skins, num, name, chromas, urls)
+        VALUES (%s, %s, %s, %s, %s, %s)
         ''', (
-            champions_skins['key'],
-            champions_skins.get('skinum'),
-            champions_skins.get('skindois'),
-            champions_skins.get('skintres'),
-            champions_skins.get('skinquatro'),
-            champions_skins.get('skincinco'),
-            champions_skins.get('skinseis'),
-            champions_skins.get('skinsete'),
-            champions_skins.get('skinoito'),
-            champions_skins.get('skinnove'),
-            champions_skins.get('skindez'),
-            champions_skins.get('skinonze'),
-            champions_skins.get('skindoze'),
-            champions_skins.get('skintreze'),
-            champions_skins.get('skincatoze'),
-            champions_skins.get('skinquinze'),
-            champions_skins.get('skindeceseis'),
-            champions_skins.get('skindecesete'),
-            champions_skins.get('skindezoito'),
-            champions_skins.get('skindezenove'),
-            champions_skins.get('skinvinte'),
-            champions_skins.get('skinvinteum'),
+            champions_skins['Champion_id'],
+            champions_skins['id'],  # Make sure 'id' exists in the DataFrame
+            champions_skins['num'],
+            champions_skins['name'],
+            champions_skins['chromas'],
+            champions_skins['urls']
         ))

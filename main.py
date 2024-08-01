@@ -1,9 +1,8 @@
 import requests
 import pandas as pd
 import banco_de_dados
-import pprint
 import openpyxl
-
+import pprint
 
 connection = banco_de_dados.get_db_connection()
 cursor = connection.cursor()
@@ -43,7 +42,7 @@ if response.status_code == 200:
     banco_de_dados.inserir_dados_champion(cursor, df)
         
     # Transformar dados em DataFrame para Champions_info
-    champion_infoo = []
+    champion_infoo: list = []
         
     for champ, details in data.items():
         champion_infoo.append({
@@ -51,8 +50,8 @@ if response.status_code == 200:
             'info': details['info']
         })
         
-    valor_info = []
-    valor_key = []
+    valor_info:list = []
+    valor_key:list = []
         
     for indice, valor in enumerate(champion_infoo):
         valor_info.append(valor['info'])
@@ -65,7 +64,7 @@ if response.status_code == 200:
     banco_de_dados.inserir_dados_champions_info(cursor, df_info)
         
     # Transformar dados em DataFrame para Champions_stats
-    champion_stats = []
+    champion_stats:list = []
         
     for champ, details in data.items():
         champion_stats.append({
@@ -73,8 +72,8 @@ if response.status_code == 200:
             'stats': details['stats']
         })
         
-    valor_stats = []
-    valor_key = []
+    valor_stats:list = []
+    valor_key:list = []
         
     for indice, valor in enumerate(champion_stats):
         valor_stats.append(valor['stats'])
@@ -86,39 +85,57 @@ if response.status_code == 200:
     # Inserindo dados na Tabela Champions stats
     banco_de_dados.inserir_dados_champions_stats(cursor, df_stats)
     
-    champion_infoo = []
+    # Extrair informações dos campeões
+    
+    champions_skins:list = []
+    
+    for champ, details in data.items():
+        champions_skins.append(details['name'])
 
-    for champ, details in dados['data'].items():
-        champion_infoo.append({
+    # Extrair skins e ids dos campeões
+    skins_data:list = []
+    name_champions:list = []
+    for name in champions_skins:
+        for champ, details in data.items():
+            if details['name'] == name:
+                skins_champions = details['skins']
+                for skin in skins_champions:
+                    name_champions.append(details['key'])
+                    skins_data.append(skin)
+
+    # Converter para DataFrame
+    skins_df = pd.DataFrame(skins_data)
+    skins_df.insert(0, 'Champion_id', name_champions)
+
+    # Obter URLs das skins
+    champion_skins:list = []
+    for champ, details in data.items():
+        champion_skins.append({
             'key': details['key'],
+            'id': details['id'],
             'skins': details['skins']
         })
 
-    valor_skins = []
-    valor_key = []
+    urls_dict:list = []
+    for champ in champion_skins:
+        champ_id = champ['id']
+        for skin in champ['skins']:
+            skin_num = skin['num']
+            url = f'https://ddragon.leagueoflegends.com/cdn/img/champion/splash/{champ_id}_{skin_num}.jpg'
+            urls_dict.append(url)
+            
+    # Converter para DataFrame
+    df_urls = pd.DataFrame(urls_dict, columns=['urls'])
+    skins_df = skins_df.join(df_urls)
 
-    for indice, valor in enumerate(champion_infoo):
-        skins_names = [skin['name'] for skin in valor['skins']]
-        valor_skins.append(skins_names)
-        valor_key.append(valor['key'])
-
-    # Criar um DataFrame com 21 colunas para comportar até 20 skins
-    columns = ['key', 'skinum', 'skindois', 'skintres', 'skinquatro', 'skincinco', 'skinseis', 'skinsete', 'skinoito', 'skinnove', 'skindez', 'skinonze', 'skindoze', 'skintreze', 'skincatoze', 'skinquinze', 'skindeceseis', 'skindecesete', 'skindezoito', 'skindezenove', 'skinvinte', 'skinvinteum']
-    df_skins = pd.DataFrame(columns=columns)
+    # Exibir o DataFrame
+    pprint.pprint(skins_df)
+    skins_df.to_excel('champions_skins_url.xlsx', index=False)
     
-    for idx, (key, skins) in enumerate(zip(valor_key, valor_skins)):
-        row = [key] + skins + [''] * (21 - len(skins))
-        row = row[:22]  # Garantir que a linha tenha exatamente 22 elementos (1 para 'key', 1 para 'skins', e 20 para skins adicionais)
-        df_skins.loc[idx] = row
-    
-    # Preencher valores nulos com 'default'
-    df_skins.fillna('default', inplace=True)
-    df_skins.to_excel('champions_skins.xlsx', index=False)
 
-    # Inserir dados preenchidos no banco de dados
-    banco_de_dados.inserir_dados_champions_skins(cursor, df_skins)
-        
+    banco_de_dados.inserir_dados_champions_skins(cursor, skins_df)
     connection.commit()
+
         
 else:
     print(f"Erro na requisição: {response.status_code}")
@@ -126,4 +143,3 @@ else:
 # Fechar cursor e conexão
 cursor.close()
 connection.close()
-
