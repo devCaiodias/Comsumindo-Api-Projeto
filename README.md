@@ -8,6 +8,12 @@ https://github.com/devCaiodias/Comsumindo-Api-Projeto
 
 https://www.python.org/downloads/release/python-3118/ https://pypi.org/project/pip/ https://pandas.pydata.org/ https://pypi.org/project/requests/ https://pypi.org/project/mysql-connector-python/ https://pypi.org/project/dotenv/
 
+### url utilizada
+
+url do site: https://developer.riotgames.com/docs/lol
+
+url dados dos champions: https://developer.riotgames.com/docs/lol#data-dragon_champions
+
 ### Apis utilizada
 
 Url_champions = https://ddragon.leagueoflegends.com/cdn/14.13.1/data/en_US/championFull.json
