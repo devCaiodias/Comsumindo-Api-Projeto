@@ -1,18 +1,7 @@
 import requests
 import pandas as pd
-import banco_de_dados
-import openpyxl
 import pprint
 
-connection = banco_de_dados.get_db_connection()
-cursor = connection.cursor()
-
-# Create tables
-banco_de_dados.create_table_champion(cursor)
-banco_de_dados.create_table_champions_info(cursor)
-banco_de_dados.create_table_champions_stats(cursor)
-banco_de_dados.create_table_champion_skin(cursor)
-connection.commit()
 
 # URL da API
 url = 'https://ddragon.leagueoflegends.com/cdn/14.13.1/data/en_US/championFull.json'
@@ -27,63 +16,64 @@ if response.status_code == 200:
         
     # Transformar dados em DataFrame
     champions = []
+    valor_key_champions = 'key'
+    valor_title_champions = 'title'
+    valor_blurb_champions = 'blurb'
+    valor_partype_champions = 'partype'
+    df_champions = pd.DataFrame()
         
-    for champ, details in data.items():
-        champions.append({
-            'key': details['key'],
-            'title': details['title'],
-            'blurb': details['blurb'],
-            'partype': details['partype'],
-        })
+    def champions4(list_champion, parametro1, parametro2, parametro3, parametro4):
+        for champ, details in data.items():
+            list_champion.append({
+                parametro1: details[parametro1],
+                parametro2: details[parametro2],
+                parametro3: details[parametro3],
+                parametro4: details[parametro4],
+            })
+
         
-    df = pd.DataFrame(champions)
-        
-    # Inserindo dados na Tabela Champions
-    banco_de_dados.inserir_dados_champion(cursor, df)
+    champions4(champions, valor_key_champions, valor_title_champions, valor_blurb_champions, valor_partype_champions)      
+    df_champions = pd.DataFrame(champions)
         
     # Transformar dados em DataFrame para Champions_info
+        
     champion_infoo: list = []
-        
-    for champ, details in data.items():
-        champion_infoo.append({
-            'key': details['key'],
-            'info': details['info']
-        })
-        
-    valor_info:list = []
-    valor_key:list = []
-        
-    for indice, valor in enumerate(champion_infoo):
-        valor_info.append(valor['info'])
-        valor_key.append(valor['key'])
+    valor_key_info = 'key'
+    valor_info = 'info'
+    list_info:list = []
+    list_key_info:list = []
+    df_info = pd.DataFrame()
+    def champions2(list_champions, parametro1, parametro2, list_value, list_value1):
+        for champ, details in data.items():
+            list_champions.append({
+                parametro1: details[parametro1],
+                parametro2: details[parametro2]
+            })
+    
             
-    df_info = pd.DataFrame(valor_info)
-    df_info.insert(0, 'key', valor_key)
-        
-    # Inserindo dados na Tabela Champions Info
-    banco_de_dados.inserir_dados_champions_info(cursor, df_info)
+        for valor in list_champions:
+            list_value.append(valor[parametro2])
+            list_value1.append(valor[parametro1])
+
+
+    champions2(champion_infoo, valor_key_info, valor_info, list_info, list_key_info)
+
+    df_info = pd.DataFrame(list_info)
+    df_info.insert(0, 'key', list_key_info)
+    
         
     # Transformar dados em DataFrame para Champions_stats
     champion_stats:list = []
-        
-    for champ, details in data.items():
-        champion_stats.append({
-            'key': details['key'],
-            'stats': details['stats']
-        })
-        
-    valor_stats:list = []
-    valor_key:list = []
-        
-    for indice, valor in enumerate(champion_stats):
-        valor_stats.append(valor['stats'])
-        valor_key.append(valor['key'])
-            
-    df_stats = pd.DataFrame(valor_stats)
-    df_stats.insert(0, 'key', valor_key)
-        
-    # Inserindo dados na Tabela Champions stats
-    banco_de_dados.inserir_dados_champions_stats(cursor, df_stats)
+    valor_key_stats = 'key'
+    valor_stats = 'stats'
+    list_stats:list = []
+    list_key_stats:list = []
+    df_stats = pd.DataFrame()
+
+    champions2(champion_stats, valor_key_stats, valor_stats, list_stats, list_key_stats)
+
+    df_stats = pd.DataFrame(list_stats)
+    df_stats.insert(0, 'key', list_key_stats)
     
     # Extrair informações dos campeões
     
@@ -130,16 +120,7 @@ if response.status_code == 200:
 
     # Exibir o DataFrame
     pprint.pprint(skins_df)
-    skins_df.to_excel('champions_skins_url.xlsx', index=False)
-    
-
-    banco_de_dados.inserir_dados_champions_skins(cursor, skins_df)
-    connection.commit()
-
+    # skins_df.to_excel('champions_skins_url.xlsx', index=False)
         
 else:
     print(f"Erro na requisição: {response.status_code}")
-
-# Fechar cursor e conexão
-cursor.close()
-connection.close()

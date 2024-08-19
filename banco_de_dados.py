@@ -1,6 +1,7 @@
 import mysql.connector
 import os
 import dotenv
+import main
 
 dotenv.load_dotenv()
 
@@ -31,6 +32,9 @@ def get_db_connection():
         database='riotgamescampeao'
     )
 
+connection = get_db_connection()
+cursor = connection.cursor()
+
 def create_table_champion(cursor):
     cursor.execute('''
     CREATE TABLE IF NOT EXISTS champion (
@@ -41,6 +45,9 @@ def create_table_champion(cursor):
         partype VARCHAR(255)
     )
     ''')
+
+create_table_champion(cursor)
+connection.commit()
 
 def create_table_champions_info(cursor):
     cursor.execute('''
@@ -53,6 +60,9 @@ def create_table_champions_info(cursor):
         difficulty INT
     )
     ''')
+
+create_table_champions_info(cursor)
+connection.commit()
 
 def create_table_champions_stats(cursor):
     cursor.execute('''
@@ -81,6 +91,9 @@ def create_table_champions_stats(cursor):
         attackspeed FLOAT
     )
     ''')
+
+create_table_champions_stats(cursor)
+connection.commit()
     
 def create_table_champion_skin(cursor):
     cursor.execute('''
@@ -95,6 +108,9 @@ def create_table_champion_skin(cursor):
     );
     ''')
 
+create_table_champion_skin(cursor)
+connection.commit()
+
 def inserir_dados_champion(cursor, df):
     for _, champion in df.iterrows():
         cursor.execute('''
@@ -107,6 +123,9 @@ def inserir_dados_champion(cursor, df):
             champion['blurb'],
             champion['partype'],
         ))
+
+inserir_dados_champion(cursor, main.df_champions)
+connection.commit()
 
 def inserir_dados_champions_info(cursor, df):
     for _, champion_info in df.iterrows():
@@ -121,6 +140,9 @@ def inserir_dados_champions_info(cursor, df):
             champion_info['magic'],
             champion_info['difficulty']
         ))
+
+inserir_dados_champions_info(cursor, main.df_info)
+connection.commit()
 
 def inserir_dados_champions_stats(cursor, df):
     for _, champion_stats in df.iterrows():
@@ -151,6 +173,9 @@ def inserir_dados_champions_stats(cursor, df):
             champion_stats['attackspeedperlevel'],
             champion_stats['attackspeed']
         ))
+
+inserir_dados_champions_stats(cursor,main.df_stats)
+connection.commit()
         
 def inserir_dados_champions_skins(cursor, df):
     for _, champions_skins in df.iterrows():
@@ -166,3 +191,10 @@ def inserir_dados_champions_skins(cursor, df):
             champions_skins['chromas'],
             champions_skins['urls']
         ))
+
+inserir_dados_champions_skins(cursor, main.skins_df)
+connection.commit()
+
+# Fechar cursor e conexão
+cursor.close()
+connection.close()
